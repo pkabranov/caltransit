@@ -49,7 +49,7 @@ app.get('/prediction/:id', (request, response) => {
     let id = request.params.id;
     response.setHeader('Content-Type', 'application/json');
 
-    const transitReq = https.request("https://api.actransit.org/transit/stops/"+id+"/tripstoday/?token=55F1E71CC988E2A2C1B2C24DA579A7D6", res => {
+    const transitReq = https.request("https://api.actransit.org/transit/stops/"+id+"/tripstoday/?token=55F1E71CC988E2A2C1B2C24DA579A7D6",  res => {
         console.log(`statusCode: ${res.statusCode}`)
     
         var data = ''
@@ -59,16 +59,16 @@ app.get('/prediction/:id', (request, response) => {
         })
         
         res.on('end', function () {
+            console.log(data);
             let js = JSON.parse(data);
             
             let parsed = []
-            for(let arrival in js) {
-                // let routeName = getRouteName(arrival["RouteId"]);
-                // parsed.push({"PassingTime": arrival["PassingTime"], "RouteName": routeName});
+            for(let arrival of js) {
+                parsed.push({"PassingTime": arrival["PassingTime"], "Headsign": arrival["Headsign"]});
             }
 
-            process.stdout.write(data)
-            response.send(data);
+            process.stdout.write(JSON.stringify(parsed))
+            response.send(JSON.stringify(parsed));
             response.end();
         })
     })
